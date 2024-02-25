@@ -1,0 +1,68 @@
+version: '2.3'
+
+services:
+  front:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    ports:
+      - '3000:3000'
+    container_name: react-container
+    environment:
+      - WATCHPACK_POLLING=true
+    networks:
+      - mern-stack-network
+    volumes:
+      - ./client:/app
+    depends_on:
+      - backend
+
+  backend:
+    build:
+      context: './server'
+      dockerfile: Dockerfile
+    ports:
+      - 4000:4000
+    container_name: express-container
+    networks:
+      - mern-stack-network
+    volumes:
+      - ./server:/app
+    depends_on:
+      - mongo
+
+  mongo:
+    image: mongo
+    ports:
+      - 27017:27017
+      # mongodb+srv://ecomerceWeb:a%4089824249@cluster0.jtmfd0k.mongodb.net/websquare
+    container_name: mongo-container
+    networks:
+      - mern-stack-network
+    volumes:
+      - mongoData:/data/db
+    env_file:
+      - ./server/.env
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=secret
+      - MONGO_INITDB_DATABASE=ecom
+
+networks:
+  mern-stack-network:
+volumes:
+  mongoData:
+
+    # Commond use after this
+    #1) docker-compose up -d
+    #2) docker ps
+
+    # for check specific container
+    #1) docker logs [conatiner name like react-container]
+
+    # for stop all container
+    #1) docker-compose down
+    #2) docker-compose up -d     ---> for start again app
+    #// "start": "node ./bin/www",
+
+
